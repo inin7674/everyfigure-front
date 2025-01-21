@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './NaverMap.css';
 
 const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
     const [map, setMap] = useState(null);
     const [markers, setMarkers] = useState([]);
     const [infowindows, setInfowindows] = useState([]);
+    const mapRef = useRef(null);  // map div에 대한 ref 추가
 
     // 마커 생성 함수
     const createMarker = (position, shopId, mapInstance) => {
@@ -13,7 +14,7 @@ const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
             map: mapInstance,
             icon: {
                 content: `
-                    <div class="marker">
+                    <div class="marker" id="marker-${shopId}">
                         <div class="marker-icon">
                             <i class="fas fa-robot"></i>
                         </div>
@@ -27,25 +28,14 @@ const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
         return marker;
     };
 
-    // 마커 hover 효과
+    // 마커 hover 효과와 정보창 표시
     useEffect(() => {
         markers.forEach(marker => {
             if (marker.shopId === hoveredShopId) {
+                // 리스트에서 hover 시 마커 애니메이션과 정보창 표시
                 marker.setIcon({
                     content: `
-                        <div class="marker hover">
-                            <div class="marker-icon">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                        </div>
-                    `,
-                    size: new naver.maps.Size(40, 40),
-                    anchor: new naver.maps.Point(20, 50)
-                });
-            } else {
-                marker.setIcon({
-                    content: `
-                        <div class="marker">
+                        <div class="marker hover" id="marker-${marker.shopId}">
                             <div class="marker-icon">
                                 <i class="fas fa-robot"></i>
                             </div>
@@ -54,9 +44,36 @@ const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
                     size: new naver.maps.Size(40, 40),
                     anchor: new naver.maps.Point(20, 40)
                 });
+                
+                const infowindow = infowindows.find(
+                    iw => iw.getContent().includes(`id="${marker.shopId}"`)
+                );
+                if (infowindow) {
+                    infowindow.open(map, marker);
+                }
+            } else {
+                // hover가 해제되면 마커 원래 상태로 복구하고 정보창 닫기
+                marker.setIcon({
+                    content: `
+                        <div class="marker" id="marker-${marker.shopId}">
+                            <div class="marker-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                        </div>
+                    `,
+                    size: new naver.maps.Size(40, 40),
+                    anchor: new naver.maps.Point(20, 40)
+                });
+                
+                const infowindow = infowindows.find(
+                    iw => iw.getContent().includes(`id="${marker.shopId}"`)
+                );
+                if (infowindow) {
+                    infowindow.close();
+                }
             }
         });
-    }, [hoveredShopId, markers]);
+    }, [hoveredShopId, markers, infowindows, map]);
 
     // 지도의 보이는 영역이 변경될 때 호출되는 함수
     const updateVisibleShops = (mapInstance, currentMarkers, allShops) => {
@@ -88,15 +105,37 @@ const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
     };
 
     useEffect(() => {
-        const initMap = () => {
-            const mapInstance = new naver.maps.Map('map', {
-                center: new naver.maps.LatLng(37.5666805, 126.9784147),
+        const loadMap = () => {
+            if (!window.naver || !window.naver.maps) return;
+            
+            // 이전 지도 인스턴스가 있다면 제거
+            if (mapRef.current) {
+                mapRef.current.innerHTML = '';
+            }
+
+            const mapOptions = {
+                center: new naver.maps.LatLng(37.557527, 126.925595),
                 zoom: 14,
-                mapTypeId: naver.maps.MapTypeId.NORMAL
+                mapTypeId: naver.maps.MapTypeId.NORMAL,
+                scaleControl: false,  // 기본 스케일바 비활성화
+                logoControl: true,
+                mapDataControl: true,
+                zoomControl: true,
+                minZoom: 6,
+                maxZoom: 21
+            };
+
+            const mapInstance = new naver.maps.Map(mapRef.current, mapOptions);
+
+            // 커스텀 스케일바 추가
+            const scaleControl = new naver.maps.ScaleControl({
+                position: naver.maps.Position.BOTTOM_RIGHT
             });
+            scaleControl.setMap(mapInstance);
 
             setMap(mapInstance);
 
+            // 매장 데이터 로드 및 마커 생성
             fetch('http://localhost:8080/findall')
                 .then(response => response.json())
                 .then(data => {
@@ -125,7 +164,7 @@ const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
 
                                 const infowindow = new naver.maps.InfoWindow({
                                     content: `
-                                        <div class="iw_inner" style="padding: 10px;">
+                                        <div class="iw_inner" style="padding: 10px;" id="${shop.id}">
                                             <h3>${shop.name}</h3>
                                             <p>${shop.address}</p>
                                         </div>
@@ -148,8 +187,43 @@ const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
                     Promise.all(geocodePromises).then(results => {
                         results.forEach(result => {
                             if (result) {
-                                newMarkers.push(result.marker);
-                                newInfowindows.push(result.infowindow);
+                                const { marker, infowindow } = result;
+                                
+                                // 마커에 직접 hover 이벤트 리스너 추가
+                                naver.maps.Event.addListener(marker, 'mouseover', function() {
+                                    marker.setIcon({
+                                        content: `
+                                            <div class="marker hover" id="marker-${marker.shopId}">
+                                                <div class="marker-icon">
+                                                    <i class="fas fa-robot"></i>
+                                                </div>
+                                            </div>
+                                        `,
+                                        size: new naver.maps.Size(40, 40),
+                                        anchor: new naver.maps.Point(20, 40)
+                                    });
+                                    infowindow.open(mapInstance, marker);
+                                });
+
+                                naver.maps.Event.addListener(marker, 'mouseout', function() {
+                                    if (marker.shopId !== hoveredShopId) {
+                                        marker.setIcon({
+                                            content: `
+                                                <div class="marker" id="marker-${marker.shopId}">
+                                                    <div class="marker-icon">
+                                                        <i class="fas fa-robot"></i>
+                                                    </div>
+                                                </div>
+                                            `,
+                                            size: new naver.maps.Size(40, 40),
+                                            anchor: new naver.maps.Point(20, 40)
+                                        });
+                                        infowindow.close();
+                                    }
+                                });
+
+                                newMarkers.push(marker);
+                                newInfowindows.push(infowindow);
                             }
                         });
 
@@ -168,22 +242,32 @@ const NaverMap = ({ shops, setShops, onVisibleShopsChange, hoveredShopId }) => {
                 .catch(error => console.error('Error fetching shops:', error));
         };
 
-        const script = document.createElement('script');
-        script.src = "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=6y0uggrmlp&submodules=geocoder";
-        script.async = true;
-        script.onload = initMap;
-        document.head.appendChild(script);
+        // 스크립트 로드 처리
+        if (!window.naver) {
+            const script = document.createElement('script');
+            script.src = "https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=6y0uggrmlp&submodules=geocoder";
+            script.async = true;
+            script.onload = loadMap;
+            document.head.appendChild(script);
+        } else {
+            loadMap();
+        }
 
+        // cleanup
         return () => {
-            document.head.removeChild(script);
-            markers.forEach(marker => marker.setMap(null));
-            infowindows.forEach(infowindow => infowindow.close());
+            if (map) {
+                markers.forEach(marker => marker.setMap(null));
+                infowindows.forEach(infowindow => infowindow.close());
+                setMarkers([]);
+                setInfowindows([]);
+                setMap(null);
+            }
         };
     }, []);
 
     return (
         <section className="navermap" id="section-3">
-            <div id="map"></div>
+            <div ref={mapRef} id="map"></div>
         </section>
     );
 };
