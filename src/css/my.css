@@ -75,98 +75,110 @@
   display: block !important;
 }
 
+/* Header 스타일 */
+.header-logo {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
 
-
-
-
-
-
+/* SearchBar 스타일 */
 .search-div {
   display: flex;
-  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
   align-items: center;
-  margin-bottom: 24px;
-  outline: 3px solid rgb(226, 206, 248);
-  height: 40px;
-  padding: 0px;
-  border-radius: 30px;
 }
 
 .dropdown {
-  margin-left: 0;
-  border-radius: 10px;
-  width: 13%;
-  text-align: center;
-  border: none;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  min-width: 100px;
 }
 
 .search-text {
-  flex-grow: 1;
-  text-align: left;
-  background: none;
-  border: none;
-  outline: none;
-  color: black;
-  font-size: 15px;
-  line-height: 40px;
-  margin-left: 10px;
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .search-btn {
-  color: rgb(226, 206, 248);
-  margin-left: 10px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #ffffff;
-  outline: none;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.navermap-div{
-  flex: 0 0 auto;
-  width: 50%
+.search-btn:hover {
+  background-color: #0056b3;
 }
 
-.flex-1 {
-  flex: 1;
-}
-
-.flex-3 {
-  flex: 3;
-}
-
-.shop-item {
-  background: white;
-  transition: all 0.2s ease;
-}
-
-.shop-img {
-  border-radius: 8px;
-  min-width: 100px;
-  width: 100px; 
-  height: 100px; 
-  background-color: #f0f0f0;
-}
-
-.shop-info {
-  padding: 0 15px;
-}
-
+/* ShopList 스타일 */
 .shop-list {
   height: 400px;
   overflow-y: auto;
 }
-.location {
-  color: #666;
-  font-size: 0.9rem;
+
+.shop-item {
+  transition: all 0.3s ease;
+}
+
+.shop-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.shop-img {
+  width: 60px;
+  height: 60px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.shop-info {
+  flex: 1;
+}
+
+.shop-name {
+  font-weight: 600;
+  margin: 0;
 }
 
 .like {
   background: none;
-  color: #ff4081;
-  font-size: 1.2rem;
+  color: #dc3545;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.like:hover {
+  transform: scale(1.1);
+}
+
+/* NaverMap 스타일 */
+.navermap {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .search-div {
+    flex-direction: column;
+  }
+  
+  .dropdown {
+    width: 100%;
+  }
+  
+  .search-text {
+    width: 100%;
+  }
+  
+  .search-btn {
+    width: 100%;
+  }
 }

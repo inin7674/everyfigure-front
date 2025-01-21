@@ -1,8 +1,183 @@
+/* 기본 레이아웃 */
 #root {
-  max-width: 1280px;
+  width: 100%;
+  min-height: 100vh;
+}
+
+main {
+  width: 100%;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+}
+
+/* 헤더 영역 */
+header {
+  padding: 20px 0;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eee;
+}
+
+header a {
+  text-decoration: none;
+  color: #333;
+}
+
+header .fs-4 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* 검색 영역 */
+.search-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  outline: 3px solid rgb(226, 206, 248);
+  height: 40px;
+  padding: 0px;
+  border-radius: 30px;
+}
+
+.dropdown {
+  margin-left: 0;
+  border-radius: 10px;
+  width: 13%;
   text-align: center;
+  border: none;
+}
+
+.search-text {
+  flex-grow: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  outline: none;
+  color: black;
+  font-size: 15px;
+  line-height: 40px;
+  margin-left: 10px;
+}
+
+.search-btn {
+  color: rgb(226, 206, 248);
+  margin-left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 메인 콘텐츠 영역 */
+.row.align-items-md-stretch {
+  display: flex;
+  gap: 20px;
+}
+
+.col-md-6 {
+  flex: 1;
+  width: 50%;
+}
+
+.navermap-div {
+  flex: 0 0 auto;
+  width: 50%;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-3 {
+  flex: 3;
+}
+
+/* 지도 영역 */
+.navermap {
+  width: 100%;
+  height: 600px;
+  position: relative;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 매장 리스트 영역 */
+.shop-list {
+  height: 600px;
+  overflow-y: auto;
+}
+
+.shop-item {
+  background: white;
+  transition: all 0.2s ease;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.shop-img {
+  border-radius: 8px;
+  min-width: 100px;
+  width: 100px; 
+  height: 100px; 
+  background-color: #f0f0f0;
+}
+
+.shop-info {
+  padding: 0 15px;
+}
+
+.location {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.like {
+  background: none;
+  color: #ff4081;
+  font-size: 1.2rem;
+  border: none;
+}
+
+/* 푸터 */
+footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .row.align-items-md-stretch {
+    flex-direction: column;
+  }
+
+  .col-md-6 {
+    width: 100%;
+  }
+
+  .navermap,
+  .shop-list {
+    height: 400px;
+  }
 }
 
 .logo {
@@ -39,5 +214,17 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* 불필요한 마진 제거 */
+.row {
+  margin: 0;
+}
+
+/* 기존 스타일 제거 */
+.row {
+  display: flex;
+  gap: 30px;
+  margin: 0 -15px;
 }
 

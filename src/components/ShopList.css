@@ -1,0 +1,43 @@
+.shop-list {
+    height: 600px;
+    overflow-y: auto;
+}
+
+.shop-item {
+    background: white;
+    transition: all 0.2s ease;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.shop-img {
+    border-radius: 8px;
+    min-width: 100px;
+    width: 100px; 
+    height: 100px; 
+    background-color: #f0f0f0;
+}
+
+.shop-info {
+    padding: 0 15px;
+}
+
+.shop-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.shop-desc {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.like {
+    background: none;
+    color: #ff4081;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+} 
