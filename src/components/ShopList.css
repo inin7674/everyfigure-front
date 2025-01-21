@@ -40,4 +40,16 @@
     font-size: 1.2rem;
     border: none;
     cursor: pointer;
+}
+
+.loading, .no-shops {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.loading {
+    background: #f8f9fa;
+    border-radius: 8px;
 } 

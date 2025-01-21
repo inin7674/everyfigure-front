@@ -1,29 +1,31 @@
-import { useState, useEffect } from 'react';
 import './ShopList.css';
 
-const ShopList = () => {
-    const [shops, setShops] = useState([]);
+const ShopList = ({ shops, isLoading, onShopSelect, onShopHover, onShopLeave }) => {
+    if (isLoading) {
+        return (
+            <div className="shop-list">
+                <div className="loading">매장 정보를 불러오는 중...</div>
+            </div>
+        );
+    }
 
-    useEffect(() => {
-        // API 호출 또는 데이터 가져오기
-        const fetchShops = async () => {
-            try {
-                // API 호출 코드
-                const response = await fetch('http://localhost:8080/findall');
-                const data = await response.json();
-                setShops(data);
-            } catch (error) {
-                console.error('Error fetching shops:', error);
-            }
-        };
-
-        fetchShops();
-    }, []);
+    if (!shops.length) {
+        return (
+            <div className="shop-list">
+                <div className="no-shops">현재 지도 영역에 표시할 매장이 없습니다.</div>
+            </div>
+        );
+    }
 
     return (
         <div className="shop-list">
             {shops.map(shop => (
-                <div key={shop.id} className="shop-item">
+                <div 
+                    key={shop.id} 
+                    className="shop-item"
+                    onMouseEnter={() => onShopHover(shop.id)}
+                    onMouseLeave={() => onShopLeave(shop.id)}
+                >
                     <div className="d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center gap-4">
                             <div className="shop-img"></div>
